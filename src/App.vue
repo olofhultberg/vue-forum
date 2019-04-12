@@ -1,14 +1,22 @@
 <template>
-  <div id="app">
-    <div class="container">
-      <router-view/>
+  <div
+    id="app"
+    class="push-top"
+  >
+    <TheNavbar />
+    <div class="container push-top">
+      <router-view />
     </div>
   </div>
 </template>
 
 <script>
+import TheNavbar from "@/components/TheNavbar";
+
 export default {
-  name: "app"
+  components: {
+    TheNavbar
+  }
 };
 </script>
 
