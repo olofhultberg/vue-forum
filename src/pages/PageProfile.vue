@@ -3,13 +3,15 @@
 
     <div class="flex-grid">
 
-      <!-- <UserProfileCard
+      <UserProfileCard
+        v-if="!edit"
         :user="this.user"
         :userPostCount="userPostCount"
         :userThreadCount="userThreadCount"
-      /> -->
+      />
 
       <UserProfileCardEditor
+        v-else
         :user="this.user"
         :userPostCount="userPostCount"
         :userThreadCount="userThreadCount"
@@ -19,7 +21,7 @@
 
         <div class="profile-header">
           <span class="text-lead">
-            Joker's recent activity
+            {{user.username}}'s recent activity
           </span>
           <a href="#">See only started threads?</a>
         </div>
@@ -41,6 +43,12 @@ import { mapGetters } from "vuex";
 import { countObjectProperties } from "@/utils";
 
 export default {
+  props: {
+    edit: {
+      type: Boolean,
+      default: false
+    }
+  },
   components: {
     PostList,
     UserProfileCard,

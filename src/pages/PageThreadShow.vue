@@ -35,18 +35,17 @@ export default {
       type: String
     }
   },
-  data() {
-    return {
-      thread: this.$store.state.threads[this.id],
-      newPostText: ""
-    };
-  },
+
   computed: {
     posts() {
       const postIds = Object.values(this.thread.posts);
       return Object.values(this.$store.state.posts).filter(post =>
         postIds.includes(post[".key"])
       );
+    },
+
+    thread() {
+      return this.$store.state.threads[this.id];
     }
   }
 };
