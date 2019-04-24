@@ -1,7 +1,11 @@
 <template>
   <div>
     <div class="post-list"></div>
-    <PostListItem v-for="post in posts" :post="post" :key="post['.key']"/>
+    <PostListItem
+      v-for="post in posts"
+      :post="post"
+      :key="post['.key']"
+    />
   </div>
 </template>
 
@@ -23,4 +27,7 @@ export default {
 </script>
 
 <style scoped>
+.fullw {
+  width: 100%;
+}
 </style>
