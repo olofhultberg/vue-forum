@@ -30,7 +30,22 @@ export default {
       required: false
     },
     post: {
-      type: Object
+      type: Object,
+      validator: obj => {
+        const isKeyValid = typeof obj[".key"] === "string";
+        const isTextValid = typeof obj.text === "string";
+        const valid = isKeyValid && isTextValid;
+
+        if (!isKeyValid) {
+          console.error("🤪 oops, post object needs a .key attribute..");
+        }
+        if (!isTextValid) {
+          console.error(
+            "🤪 Woohhhoo!!??, post object needs a text attribute.."
+          );
+        }
+        return valid;
+      }
     }
   },
 
