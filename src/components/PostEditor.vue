@@ -23,17 +23,33 @@
 export default {
   props: {
     threadId: {
-      required: true
+      required: false
+    },
+    post: {
+      type: Object
     }
   },
 
   data() {
     return {
-      text: ""
+      text: this.post ? this.post.text : ""
     };
   },
+
+  computed: {
+    isUpdate() {
+      return !!this.post;
+    }
+  },
+
   methods: {
     save() {
+      (this.isUpdate ? this.update() : this.create()).then(post => {
+        this.$emit("save", { post });
+      });
+    },
+
+    create() {
       const post = {
         text: this.text,
         threadId: this.threadId
@@ -41,8 +57,15 @@ export default {
 
       this.text = "";
 
-      this.$emit("save", { post });
-      this.$store.dispatch("createPost", post);
+      return this.$store.dispatch("createPost", post);
+    },
+
+    update() {
+      const payload = {
+        id: this.post[".key"],
+        text: this.text
+      };
+      return this.$store.dispatch("updatePost", payload);
     }
   }
 };
