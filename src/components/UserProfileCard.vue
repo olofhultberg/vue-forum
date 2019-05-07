@@ -56,16 +56,15 @@ export default {
     user: {
       required: true,
       type: Object
+    }
+  },
+  computed: {
+    userPostCount() {
+      return this.$store.getters.usersPostCount(this.user[".key"]);
     },
 
-    userPostCount: {
-      required: true,
-      type: Number
-    },
-
-    userThreadCount: {
-      required: true,
-      type: Number
+    userThreadCount() {
+      return this.$store.getters.usersThreadCount(this.user[".key"]);
     }
   }
 };

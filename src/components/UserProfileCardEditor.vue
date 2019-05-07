@@ -107,16 +107,6 @@ export default {
     user: {
       required: true,
       type: Object
-    },
-
-    userPostCount: {
-      required: true,
-      type: Number
-    },
-
-    userThreadCount: {
-      required: true,
-      type: Number
     }
   },
 
@@ -124,6 +114,16 @@ export default {
     return {
       activeUser: { ...this.user }
     };
+  },
+
+  computed: {
+    userPostCount() {
+      return this.$store.getters.usersPostCount(this.user[".key"]);
+    },
+
+    userThreadCount() {
+      return this.$store.getters.usersThreadCount(this.user[".key"]);
+    }
   },
 
   methods: {
