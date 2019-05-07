@@ -71,7 +71,7 @@
         </li>
         <li class="navbar-item mobile-only">
           <a href="#">Logout</a>
-        </li> -->
+        </li>
       </ul>
     </nav>
   </header>

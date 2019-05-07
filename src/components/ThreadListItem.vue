@@ -44,8 +44,7 @@ export default {
   },
   computed: {
     repliesCount() {
-      const ret = countObjectProperties(this.thread.posts) - 1;
-      return ret > 0 ? ret : 0;
+      return this.$store.getters.repliesCount(this.thread[".key"]);
     },
     user() {
       return this.$store.state.users[this.thread.userId];

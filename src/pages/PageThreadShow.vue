@@ -14,12 +14,12 @@
         By <a
           href="#"
           class="link-unstyled"
-        >Robin</a>,
+        >{{user.name}}</a>,
         <AppDate :timeStamp="thread.publishedAt" />.
         <span
           style="float:right; margin-top: 2px;"
           class="hide-mobile text-faded text-small"
-        >3 replies by 3 contributors</span>
+        >{{repliesCount}} replies by {{contributorsCount}} contributors</span>
       </p>
       <PostList :posts="posts" />
       <PostEditor :threadId="id" />
@@ -50,6 +50,27 @@ export default {
       return Object.values(this.$store.state.posts).filter(post =>
         postIds.includes(post[".key"])
       );
+    },
+
+    user() {
+      return this.$store.state.users[this.thread.userId];
+    },
+
+    repliesCount() {
+      return this.$store.getters.repliesCount(this.thread[".key"]);
+    },
+
+    contributorsCount() {
+      // find the replies
+      const replies = Object.keys(this.thread.posts)
+        .filter(postId => postId !== this.thread.firstPostId)
+        .map(postId => this.$store.state.posts[postId]);
+
+      // get the user id
+      const userIds = replies.map(post => post.userId);
+      // count the unique ids
+      return userIds.filter((item, index) => index === userIds.indexOf(item))
+        .length;
     },
 
     thread() {

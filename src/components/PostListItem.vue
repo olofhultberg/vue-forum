@@ -14,6 +14,7 @@
             alt
           >
         </a>
+        <p class="desktop-only text-small">{{userThreadCount}} threads</p>
         <p class="desktop-only text-small">{{userPostCount}} posts</p>
       </div>
 
@@ -79,6 +80,9 @@ export default {
 
     userPostCount() {
       return this.$store.getters.usersPostCount(this.post.userId);
+    },
+    userThreadCount() {
+      return this.$store.getters.usersThreadCount(this.post.userId);
     }
   }
 };
