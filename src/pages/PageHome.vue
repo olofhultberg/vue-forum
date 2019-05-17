@@ -17,6 +17,14 @@ export default {
 
   components: {
     CategoryList
+  },
+
+  beforeCreate() {
+    console.log("😳 before create..", this.categories);
+  },
+
+  created() {
+    console.log("🚌 created..", this.categories);
   }
 };
 </script>

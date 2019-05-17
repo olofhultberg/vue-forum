@@ -1,7 +1,7 @@
 <template>
   <div class="col-full">
     <div class="col-large push-top">
-      <h1>{{ thread.title }}
+      <!-- <h1>{{ thread.title }}
         <router-link
           :to="{name: 'ThreadEdit', id: 'this.id'}"
           class="btn-green btn-small"
@@ -22,7 +22,7 @@
         >{{repliesCount}} replies by {{contributorsCount}} contributors</span>
       </p>
       <PostList :posts="posts" />
-      <PostEditor :threadId="id" />
+      <PostEditor :threadId="id" /> -->
 
     </div>
   </div>
@@ -31,6 +31,7 @@
 <script>
 import PostList from "@/components/PostList";
 import PostEditor from "@/components/PostEditor";
+import firebase from "firebase";
 
 export default {
   components: {
@@ -76,6 +77,23 @@ export default {
     thread() {
       return this.$store.state.threads[this.id];
     }
+  },
+
+  created() {
+    console.log("🚌.. running (created lifecycle)..", this.id);
+
+    firebase
+      .database()
+      .ref("threads")
+      .child(this.id)
+      .on("value", snapshot => {
+        const thread = snapshot.val();
+
+        this.$store.commit("setThread", {
+          threadId: "",
+          thread: { ...thread, ".key": snapshot.key }
+        });
+      });
   }
 };
 </script>
