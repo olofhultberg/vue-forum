@@ -1,7 +1,7 @@
 <template>
   <div class="col-full">
     <div class="col-large push-top">
-      <!-- <h1>{{ thread.title }}
+      <h1>{{ thread.title }}
         <router-link
           :to="{name: 'ThreadEdit', id: 'this.id'}"
           class="btn-green btn-small"
@@ -22,7 +22,7 @@
         >{{repliesCount}} replies by {{contributorsCount}} contributors</span>
       </p>
       <PostList :posts="posts" />
-      <PostEditor :threadId="id" /> -->
+      <PostEditor :threadId="id" />
 
     </div>
   </div>
@@ -81,16 +81,15 @@ export default {
 
   created() {
     console.log("🚌.. running (created lifecycle)..", this.id);
-
     firebase
       .database()
       .ref("threads")
       .child(this.id)
-      .on("value", snapshot => {
+      .once("value", snapshot => {
         const thread = snapshot.val();
 
         this.$store.commit("setThread", {
-          threadId: "",
+          threadId: snapshot.key,
           thread: { ...thread, ".key": snapshot.key }
         });
       });
