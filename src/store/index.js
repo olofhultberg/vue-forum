@@ -21,12 +21,12 @@ export default new Vuex.Store({
     threads: {},
     users: {},
     forums: {},
-    authId: '7uVPJS9GHoftN58Z2MXCYDqmNAh2'
+    authId: '7uVPJS9GHoftN58Z2MXCYDqmNAh2',
   },
 
   getters: {
     authUser (state) {
-      //return state.users[state.authId]
+      // return state.users[state.authId]
       return {}
     },
     usersThreadCount: state => id =>

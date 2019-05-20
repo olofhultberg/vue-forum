@@ -46,6 +46,10 @@ export default {
   },
 
   computed: {
+    thread() {
+      return this.$store.state.threads[this.id];
+    },
+
     posts() {
       const postIds = Object.values(this.thread.posts);
       return Object.values(this.$store.state.posts).filter(post =>
@@ -72,27 +76,45 @@ export default {
       // count the unique ids
       return userIds.filter((item, index) => index === userIds.indexOf(item))
         .length;
-    },
-
-    thread() {
-      return this.$store.state.threads[this.id];
     }
   },
 
   created() {
-    console.log("🚌.. running (created lifecycle)..", this.id);
+    //console.log("🚌.. running (created lifecycle)..", this.id);
+
+    //fetch thread
     firebase
       .database()
       .ref("threads")
       .child(this.id)
       .once("value", snapshot => {
         const thread = snapshot.val();
-
         this.$store.commit("setThread", {
           threadId: snapshot.key,
           thread: { ...thread, ".key": snapshot.key }
         });
       });
+
+    console.log("threads", this.$store.state.threads);
+
+    // fetch user
+    firebase
+      .database()
+      .ref("users")
+      .child(this.thread.userId)
+      .once(
+        "value",
+        snapshot => {
+          const user = snapshot.val();
+          this.$store.commit("setUser", {
+            userId: snapshot.key,
+            user: { ...user, ".key": snapshot.key }
+          });
+        },
+        errorObject => {
+          console.log("Fetch user failed, ", errorObject.code);
+        }
+      );
   }
 };
 </script>
