@@ -82,6 +82,8 @@ export default {
   created() {
     //console.log("🚌.. running (created lifecycle)..", this.id);
 
+    // browse the page on build and then /thread/-KsjWehQ--apjDBwSBCY
+
     //fetch thread
     firebase
       .database()
