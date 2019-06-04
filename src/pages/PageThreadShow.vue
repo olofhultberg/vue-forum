@@ -1,37 +1,41 @@
 <template>
-  <div class="col-full">
-    <div class="col-large push-top">
-      <h1>{{ thread.title }}
-        <router-link
-          :to="{name: 'ThreadEdit', id: 'this.id'}"
-          class="btn-green btn-small"
-          tag="button"
-        >
-          Edit Thread
-        </router-link>
-      </h1>
-      <p>
-        By <a
-          href="#"
-          class="link-unstyled"
-        >{{user.name}}</a>,
-        <AppDate :timeStamp="thread.publishedAt" />.
-        <span
-          style="float:right; margin-top: 2px;"
-          class="hide-mobile text-faded text-small"
-        >{{repliesCount}} replies by {{contributorsCount}} contributors</span>
-      </p>
-      <PostList :posts="posts" />
-      <PostEditor :threadId="id" />
 
-    </div>
+  <div
+    v-if="thread && user"
+    class="col-large push-top"
+  >
+    <h1>{{ thread.title }}
+      <router-link
+        :to="{name: 'ThreadEdit', id: 'this.id'}"
+        class="btn-green btn-small"
+        tag="button"
+      >
+        Edit Thread
+      </router-link>
+    </h1>
+    <p>
+      By <a
+        href="#"
+        class="link-unstyled"
+      >{{user.name}}</a>,
+      <AppDate :timeStamp="thread.publishedAt" />.
+      <span
+        style="float:right; margin-top: 2px;"
+        class="hide-mobile text-faded text-small"
+      >{{repliesCount}} replies by {{contributorsCount}} contributors</span>
+    </p>
+    <PostList :posts="posts" />
+    <PostEditor :threadId="id" />
+
   </div>
+
 </template>
 
 <script>
 import PostList from "@/components/PostList";
 import PostEditor from "@/components/PostEditor";
 import firebase from "firebase";
+import { countObjectProperties } from "@/utils";
 
 export default {
   components: {
@@ -66,57 +70,37 @@ export default {
     },
 
     contributorsCount() {
-      // find the replies
-      const replies = Object.keys(this.thread.posts)
-        .filter(postId => postId !== this.thread.firstPostId)
-        .map(postId => this.$store.state.posts[postId]);
-
-      // get the user id
-      const userIds = replies.map(post => post.userId);
-      // count the unique ids
-      return userIds.filter((item, index) => index === userIds.indexOf(item))
-        .length;
+      return countObjectProperties(this.thread.contributors);
     }
   },
 
   created() {
-    //console.log("🚌.. running (created lifecycle)..", this.id);
+    
+    //Fetch threads
+    firebase.database().ref('threads').child(this.id).once('value', snapshot => {
+      const thread = snapshot.val();
+      this.$store.commit('setThread', {threadId: snapshot.key, thread: {...thread, '.key': snapshot.key}} )
 
-    // browse the page on build and then /thread/-KsjWehQ--apjDBwSBCY
-
-    //fetch thread
-    firebase
-      .database()
-      .ref("threads")
-      .child(this.id)
-      .once("value", snapshot => {
-        const thread = snapshot.val();
-        this.$store.commit("setThread", {
-          threadId: snapshot.key,
-          thread: { ...thread, ".key": snapshot.key }
-        });
-      });
-
-    console.log("threads", this.$store.state.threads);
-
-    // fetch user
-    firebase
-      .database()
-      .ref("users")
-      .child(this.thread.userId)
-      .once(
-        "value",
-        snapshot => {
+      //fetch user
+      firebase.database().ref('users').child(thread.userId).once('value', snapshot => {
+      const user = snapshot.val();
+      this.$store.commit('setUser', {userId: snapshot.key, user: {...user, '.key': snapshot.key}} )
+      })
+      //Fetch posts
+      Object.keys(thread.posts).forEach(postId => {
+        firebase.database().ref('posts').child(postId).once('value', snapshot => {
+        const post = snapshot.val();
+        this.$store.commit('setPost', {postId: snapshot.key, post: {...post, '.key': snapshot.key}} )
+        //Fetch user of the post
+        firebase.database().ref('users').child(post.userId).once('value', snapshot => {
           const user = snapshot.val();
-          this.$store.commit("setUser", {
-            userId: snapshot.key,
-            user: { ...user, ".key": snapshot.key }
-          });
-        },
-        errorObject => {
-          console.log("Fetch user failed, ", errorObject.code);
-        }
-      );
+          this.$store.commit('setUser', {userId: snapshot.key, user: {...user, '.key': snapshot.key}} )
+        })
+        
+        })
+      })
+
+    })
   }
 };
 </script>
