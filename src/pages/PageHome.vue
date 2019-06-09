@@ -20,11 +20,12 @@ export default {
   },
 
   beforeCreate() {
-    console.log("😳 before create..", this.categories);
+    this.$store.dispatch('fetchAllCategories')
+      .then(categories => {
+        categories.forEach(category => this.$store.dispatch('fetchForums', {ids: Object.keys(category.forums)}))
+      })
   },
 
-  created() {
-    console.log("🚌 created..", this.categories);
-  }
+  
 };
 </script>
