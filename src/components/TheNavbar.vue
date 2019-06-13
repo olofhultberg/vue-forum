@@ -78,13 +78,25 @@
 </template>
 
 <script>
+import {mapActions} from 'vuex';
 import { mapGetters } from "vuex";
 
 export default {
   computed: {
     ...mapGetters({
       user: "authUser"
-    })
+    }),
+    
+    user() {
+      return this.fetchUser({id: this.$store.state.authId})
+    },
+  },
+  methods: {
+    ...mapActions(['fetchUser'])
+  },
+  created(){
+    const user = this.fetchUser({id: this.$store.state.authId})
+
   }
 };
 </script>
