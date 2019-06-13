@@ -32,6 +32,7 @@
 </template>
 
 <script>
+import {mapActions} from 'vuex';
 import PostList from "@/components/PostList";
 import PostEditor from "@/components/PostEditor";
 import { countObjectProperties } from "@/utils";
@@ -73,17 +74,21 @@ export default {
     }
   },
 
+  methods: {
+    ...mapActions(['fetchThread','fetchUser','fetchPosts'])
+  },
+
   created() {
     //Fetch threads
-    this.$store.dispatch('fetchThread', {id: this.id}).then(thread => {
+    this.fetchThread({id: this.id}).then(thread => {
       
       //fetch user
-      this.$store.dispatch('fetchUser', {id: thread.userId})
+      this.fetchUser({id: thread.userId})
       //Fetch posts
-      this.$store.dispatch('fetchPosts', {ids: Object.keys(thread.posts)} )
+      this.fetchPosts({ids: Object.keys(thread.posts)} )
         .then(posts => {
           posts.forEach(post => {
-            this.$store.dispatch('fetchUser', {id: post.userId})
+            this.fetchUser({id: post.userId})
           })
         })
       // firebase.database().ref('users').child(thread.userId).once('value', snapshot => {

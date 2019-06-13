@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import { countObjectProperties } from '@/utils'
 import firebase from 'firebase'
+import { isArray } from 'util';
 
 Vue.use(Vuex)
 
@@ -42,6 +43,12 @@ export default new Vuex.Store({
   },
 
   actions: {
+    fetchCategory ({ dispatch }, { id }) {
+      return dispatch('fetchItem', {id, emoji: '🗂', resource: 'categories'})
+    },
+    fetchForum ({ dispatch }, { id }) {
+      return dispatch('fetchItem', {id, emoji: '☀️', resource: 'forums'})
+    },
     fetchThread ({ dispatch}, { id }) {
       return dispatch('fetchItem', {id, emoji: '📄', resource: 'threads'})
     },
@@ -51,31 +58,23 @@ export default new Vuex.Store({
     fetchPost ({ dispatch }, { id }) {
       return dispatch('fetchItem', {id, emoji: '📩', resource: 'posts'})
     },
-
+   
+   
+    fetchCategories({dispatch},{ids}){
+      return dispatch('fetchItems', {resource: 'categories', emoji: '🗂', ids})
+    },
+    fetchForums({dispatch},{ids}){
+      return dispatch('fetchItems', {resource: 'forums', emoji: '🌤', ids})
+    },
+    fetchThreads({dispatch},{ids}){
+      return dispatch('fetchItems', {resource: 'threads', emoji: '📄', ids})
+    },
     fetchPosts({dispatch},{ids}){
         return dispatch('fetchItems', {resource: 'posts', emoji: '💬', ids})
     },
-
-    fetchForums({dispatch},{ids}){
-      return dispatch('fetchItems', {resource: 'forums', emoji: '🌤', ids})
-  },
-
-    fetchItem ({ state, commit }, { id, emoji, resource }) {
-      console.log('🔥', emoji, id)
-      // fetch thread
-      return new Promise((resolve, reject) => {
-        firebase.database().ref(resource).child(id).once('value', snapshot => {
-            // Set item in state
-            commit('setItem', {resource, id: snapshot.key, item: snapshot.val()})
-            resolve(state[resource][id])
-          })
-      })
+    fetchUsers({dispatch},{ids}){
+      return dispatch('fetchItems', {resource: 'users', emoji: '💁🏼‍♂️', ids})
     },
-
-    fetchItems({dispatch},{ids,resource,emoji}){
-       return Promise.all(ids.map(id => dispatch('fetchItem', {id, resource, emoji})))
-    },
-
     fetchAllCategories({state, commit}){
       console.log('🔥', '🗂', 'all')
       return new Promise((resolve, reject) => {
@@ -89,7 +88,25 @@ export default new Vuex.Store({
         })
       })
     },
+
+    fetchItem ({ state, commit }, { id, emoji, resource }) {
+      console.log('🔥', emoji, id)
+      // fetch thread
+      return new Promise((resolve, reject) => {
+        firebase.database().ref(resource).child(id).once('value', snapshot => {
+            // Set item in state
+            commit('setItem', {resource, id: snapshot.key, item: snapshot.val()})
+            resolve(state[resource][id])
+          })
+      })
+    },
     
+
+    fetchItems({dispatch},{ids,resource,emoji}){
+      ids = isArray(ids) ? ids : Object.keys(ids);
+       return Promise.all(ids.map(id => dispatch('fetchItem', {id, resource, emoji})))
+    },
+
     createPost ({ commit, state }, post) {
       const postId = 'greatPost' + Math.random()
       post['.key'] = postId
